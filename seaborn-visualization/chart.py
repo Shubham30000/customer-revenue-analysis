@@ -6,68 +6,82 @@ import numpy as np
 # Set random seed for reproducibility
 np.random.seed(42)
 
-# Generate synthetic monthly revenue data for different customer segments
-months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+# Generate synthetic monthly revenue data
+months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
           'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-# Create data for three customer segments with realistic seasonal patterns
+# Create realistic seasonal revenue data for three customer segments
 data = []
-for month_idx, month in enumerate(months):
-    # Premium segment - higher baseline, strong holiday season
-    premium_base = 85000 + (month_idx * 2000)
-    if month_idx >= 10:  # Nov-Dec boost
-        premium_base += 25000
-    premium = premium_base + np.random.normal(0, 3000)
-    
-    # Standard segment - moderate baseline, moderate seasonality
-    standard_base = 45000 + (month_idx * 1000)
-    if month_idx >= 10:  # Nov-Dec boost
-        standard_base += 12000
-    standard = standard_base + np.random.normal(0, 2000)
-    
-    # Budget segment - lower baseline, less seasonal variation
-    budget_base = 22000 + (month_idx * 500)
-    if month_idx >= 10:  # Nov-Dec boost
-        budget_base += 5000
-    budget = budget_base + np.random.normal(0, 1500)
-    
-    data.append({'Month': month, 'Revenue': premium, 'Segment': 'Premium'})
-    data.append({'Month': month, 'Revenue': standard, 'Segment': 'Standard'})
-    data.append({'Month': month, 'Revenue': budget, 'Segment': 'Budget'})
+for i, month in enumerate(months):
+    # Premium segment - high revenue with strong seasonality
+    premium_revenue = 80000 + (i * 2500) + np.random.normal(0, 2000)
+    if i >= 10:  # Holiday boost
+        premium_revenue += 20000
+
+    # Standard segment - moderate revenue
+    standard_revenue = 45000 + (i * 1200) + np.random.normal(0, 1500)
+    if i >= 10:
+        standard_revenue += 10000
+
+    # Budget segment - lower revenue with less variation
+    budget_revenue = 22000 + (i * 600) + np.random.normal(0, 1000)
+    if i >= 10:
+        budget_revenue += 4000
+
+    data.append({'Month': month, 'Revenue': premium_revenue, 'Segment': 'Premium'})
+    data.append({'Month': month, 'Revenue': standard_revenue, 'Segment': 'Standard'})
+    data.append({'Month': month, 'Revenue': budget_revenue, 'Segment': 'Budget'})
 
 # Create DataFrame
 df = pd.DataFrame(data)
 
-# Set Seaborn style for professional appearance
+# Ensure months appear in correct order on x-axis
+df["Month"] = pd.Categorical(df["Month"], categories=months, ordered=True)
+
+# Apply Seaborn styling
 sns.set_style("whitegrid")
-sns.set_context("talk", font_scale=0.85)
+sns.set_context("talk", font_scale=1.0)
 
-# Create figure with specified size (8x8 inches at 64 DPI = 512x512 pixels)
-fig, ax = plt.subplots(figsize=(8, 8))
+# Create figure (8 in × 64 dpi = 512 px)
+plt.figure(figsize=(8, 8))
 
-# Create lineplot with professional styling
-sns.lineplot(data=df, x='Month', y='Revenue', hue='Segment', 
-             palette=['#2E86AB', '#A23B72', '#F18F01'],
-             linewidth=2.5, marker='o', markersize=7, ax=ax)
+# Create Seaborn lineplot
+sns.lineplot(
+    data=df,
+    x="Month",
+    y="Revenue",
+    hue="Segment",
+    palette="Set2",
+    linewidth=2.5,
+    marker="o",
+    markersize=6,
+)
 
-# Customize the plot
-ax.set_title('Monthly Revenue Trends by Customer Segment', 
-             fontsize=15, fontweight='bold', pad=15)
-ax.set_xlabel('Month', fontsize=12, fontweight='bold')
-ax.set_ylabel('Revenue ($)', fontsize=12, fontweight='bold')
+# Add labels and title
+plt.title(
+    "Monthly Revenue Trends by Customer Segment",
+    fontsize=16,
+    fontweight="bold",
+    pad=15,
+)
+plt.xlabel("Month", fontsize=12, fontweight="bold")
+plt.ylabel("Revenue ($)", fontsize=12, fontweight="bold")
 
-# Format y-axis to show values in thousands
-ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x/1000:.0f}K'))
+# Rotate x-axis labels
+plt.xticks(rotation=45)
 
-# Rotate x-axis labels for better readability
-plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
+# Format y-axis
+ax = plt.gca()
+ax.yaxis.set_major_formatter(
+    plt.FuncFormatter(lambda x, p: f"${x/1000:.0f}K")
+)
 
 # Customize legend
-ax.legend(title='Customer Segment', title_fontsize=10, 
-          fontsize=9, loc='upper left', frameon=True)
+plt.legend(title="Customer Segment", loc="upper left", fontsize=9)
 
-# Remove bbox_inches='tight' to maintain exact dimensions
-plt.savefig('chart.png', dpi=64)
+# Save image
+plt.tight_layout()
+plt.savefig("chart.png", dpi=64)
+plt.close()
 
-print("Chart generated successfully: chart.png")
-print(f"Chart dimensions: 512x512 pixels (8 inches x 8 inches at 64 DPI)")
+print("Chart saved as chart.png")

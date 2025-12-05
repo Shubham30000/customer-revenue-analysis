@@ -40,38 +40,34 @@ df = pd.DataFrame(data)
 
 # Set Seaborn style for professional appearance
 sns.set_style("whitegrid")
-sns.set_context("talk", font_scale=0.9)
+sns.set_context("talk", font_scale=0.85)
 
-# Create figure with specified size
-plt.figure(figsize=(8, 8))
+# Create figure with specified size (8x8 inches at 64 DPI = 512x512 pixels)
+fig, ax = plt.subplots(figsize=(8, 8))
 
 # Create lineplot with professional styling
 sns.lineplot(data=df, x='Month', y='Revenue', hue='Segment', 
              palette=['#2E86AB', '#A23B72', '#F18F01'],
-             linewidth=2.5, marker='o', markersize=8)
+             linewidth=2.5, marker='o', markersize=7, ax=ax)
 
 # Customize the plot
-plt.title('Monthly Revenue Trends by Customer Segment', 
-          fontsize=16, fontweight='bold', pad=20)
-plt.xlabel('Month', fontsize=13, fontweight='bold')
-plt.ylabel('Revenue ($)', fontsize=13, fontweight='bold')
+ax.set_title('Monthly Revenue Trends by Customer Segment', 
+             fontsize=15, fontweight='bold', pad=15)
+ax.set_xlabel('Month', fontsize=12, fontweight='bold')
+ax.set_ylabel('Revenue ($)', fontsize=12, fontweight='bold')
 
 # Format y-axis to show values in thousands
-ax = plt.gca()
 ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'${x/1000:.0f}K'))
 
 # Rotate x-axis labels for better readability
-plt.xticks(rotation=45, ha='right')
+plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
 
 # Customize legend
-plt.legend(title='Customer Segment', title_fontsize=11, 
-           fontsize=10, loc='upper left', frameon=True)
+ax.legend(title='Customer Segment', title_fontsize=10, 
+          fontsize=9, loc='upper left', frameon=True)
 
-# Adjust layout to prevent label cutoff
-plt.tight_layout()
-
-# Save the chart as PNG with exactly 512x512 pixels
-plt.savefig('chart.png', dpi=64, bbox_inches='tight')
+# Remove bbox_inches='tight' to maintain exact dimensions
+plt.savefig('chart.png', dpi=64)
 
 print("Chart generated successfully: chart.png")
-print(f"Chart dimensions: 512x512 pixels")
+print(f"Chart dimensions: 512x512 pixels (8 inches x 8 inches at 64 DPI)")
